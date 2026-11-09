@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:DepalAdmin.Feature.Handover"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=local:HandoverViewModel}"
-             d:DesignWidth="1200" d:DesignHeight="650">
+             d:DesignWidth="1200" d:DesignHeight="650"
+             PreviewMouseDown="OnRootPreviewMouseDown">
     <DockPanel>
         <!-- 로그인 직후 안내 (안 읽은 메모가 있을 때만) -->
         <Border DockPanel.Dock="Top" Margin="0,0,0,10" Padding="10,7" BorderThickness="1"
@@ -19,7 +20,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="480"/>
+                <ColumnDefinition Width="500"/>
             </Grid.ColumnDefinitions>
 
             <!-- 목록 -->
@@ -36,7 +37,7 @@
                     </StackPanel>
                 </Border>
 
-                <DataGrid ItemsSource="{Binding Notes}" SelectedItem="{Binding Selected}">
+                <DataGrid x:Name="NotesGrid" ItemsSource="{Binding Notes}" SelectedItem="{Binding Selected}">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Style.Triggers>
@@ -56,158 +57,172 @@
                 </DataGrid>
             </DockPanel>
 
-            <!-- 선택한 메모 + 쓰기 -->
-            <Grid Grid.Column="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="190"/>
-                    <RowDefinition Height="10"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+            <!-- 우측: 인수인계 선택 시 작성된 모든 항목 보기 / 다른 곳 클릭 시 새 인수인계 작성 -->
+            <HeaderedContentControl x:Name="RightPanel" Grid.Column="2" Header="{Binding RightPanelHeader}" Style="{StaticResource Section}" Padding="0">
+                <DockPanel>
+                    <!-- 인수인계 클릭(선택) 시 상단에 표시되는 작성자·시각·라인상태·[읽음] 버튼 바 -->
+                    <Border DockPanel.Dock="Top" BorderBrush="{StaticResource Brush.Rule}" BorderThickness="0,0,0,1"
+                            Background="{StaticResource Brush.PanelHead}" Padding="12,8"
+                            Visibility="{Binding IsViewingSelected, Converter={StaticResource BoolToVis}}">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="읽음" Command="{Binding MarkReadCommand}" Style="{StaticResource CmdMain}" Margin="0,0,6,0"/>
+                                <Button Content="새 메모 쓰기" Command="{Binding ClearSelectionCommand}" Style="{StaticResource Cmd}" Margin="0"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock>
+                                    <Run Text="{Binding Selected.Author, Mode=OneWay}" FontWeight="SemiBold"/>
+                                    <Run Text="  "/>
+                                    <Run Text="{Binding Selected.Raw.WrittenAt, Mode=OneWay, StringFormat='yyyy-MM-dd HH:mm'}"
+                                         FontFamily="{StaticResource Font.Readout}" Foreground="{StaticResource Brush.SubText}"/>
+                                    <Run Text="  (" Foreground="{StaticResource Brush.SubText}"/>
+                                    <Run Text="{Binding Selected.ReadText, Mode=OneWay}" Foreground="{StaticResource Brush.SubText}"/>
+                                    <Run Text=")" Foreground="{StaticResource Brush.SubText}"/>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Selected.LineText}" Style="{StaticResource Hint}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
 
-                <HeaderedContentControl Grid.Row="0" Header="선택한 메모" Style="{StaticResource Section}">
-                    <DockPanel>
-                        <Button DockPanel.Dock="Bottom" Content="읽음" Command="{Binding MarkReadCommand}" Style="{StaticResource Cmd}"
-                                HorizontalAlignment="Left" Margin="0,10,0,0"/>
-                        <StackPanel DockPanel.Dock="Top">
-                            <TextBlock>
-                                <Run Text="{Binding Selected.Author, Mode=OneWay, FallbackValue='왼쪽 목록에서 고르세요'}" FontWeight="SemiBold"/>
-                                <Run Text="  "/>
-                                <Run Text="{Binding Selected.Raw.WrittenAt, Mode=OneWay, StringFormat='yyyy-MM-dd HH:mm'}"
-                                     FontFamily="{StaticResource Font.Readout}" Foreground="{StaticResource Brush.SubText}"/>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Selected.LineText}" Style="{StaticResource Hint}" Margin="0,3,0,8"/>
+                    <!-- 하단: 6. 판정 기준 변경 및 상세 전달사항 + [남기기] 버튼 -->
+                    <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Brush.Rule}" BorderThickness="0,1,0,0"
+                            Background="{StaticResource Brush.Panel}" Padding="12,8">
+                        <StackPanel>
+                            <TextBlock Text="6. 판정 기준 변경 및 상세 전달사항" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6" IsEnabled="{Binding CanEditForm}">
+                                <TextBlock Text="인계 구분" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ComboBox ItemsSource="{Binding WriteCategories}" SelectedItem="{Binding SelectedWriteCategory}" Width="140"/>
+                            </StackPanel>
+                            <TextBox Text="{Binding Draft, UpdateSourceTrigger=PropertyChanged}" Height="74" AcceptsReturn="True"
+                                     TextWrapping="Wrap" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"
+                                     IsReadOnly="{Binding IsViewingSelected}"
+                                     IsEnabled="{Binding CanWrite}"/>
+                            <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,8"
+                                       Visibility="{Binding IsWritingMode, Converter={StaticResource BoolToVis}}"
+                                       Text="지금 라인 상태·회차·미확인 알람 수가 자동으로 붙습니다. 보기 전용 계정은 쓸 수 없습니다."/>
+                            <Button Content="남기기" Command="{Binding WriteCommand}" Style="{StaticResource CmdMain}"
+                                    Visibility="{Binding IsWritingMode, Converter={StaticResource BoolToVis}}"
+                                    HorizontalAlignment="Left"/>
                         </StackPanel>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <TextBlock Text="{Binding Selected.Raw.Text}" TextWrapping="Wrap"/>
-                        </ScrollViewer>
-                    </DockPanel>
-                </HeaderedContentControl>
+                    </Border>
 
-                <HeaderedContentControl Grid.Row="2" Header="메모 남기기" Style="{StaticResource Section}" Padding="0">
-                    <DockPanel IsEnabled="{Binding CanWrite}">
-                        <!-- 하단 원래 메모 입력칸 + 안내 문구 + 남기기 버튼 -->
-                        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Brush.Rule}" BorderThickness="0,1,0,0"
-                                Background="{StaticResource Brush.Panel}" Padding="12,8">
-                            <StackPanel>
-                                <TextBlock Text="6. 판정 기준 변경 및 상세 전달사항" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
-                                    <TextBlock Text="인계 구분" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <ComboBox SelectedIndex="0" Width="135">
-                                        <ComboBoxItem Content="일반 인계"/>
-                                        <ComboBoxItem Content="설비 주의"/>
-                                        <ComboBoxItem Content="기준·설정 변경"/>
-                                        <ComboBoxItem Content="긴급 확인"/>
-                                    </ComboBox>
+                    <!-- 1~5번 교대 인수인계 점검 항목 (작성 시 입력 가능 / 선택 시 작성했던 모든 내용 그대로 표시) -->
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,10">
+                        <StackPanel IsEnabled="{Binding CanEditForm}">
+                            <!-- 1. 검사 회차 실적 및 진행 현황 -->
+                            <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
+                                <StackPanel>
+                                    <TextBlock Text="1. 검사 회차(Run) 실적 및 진행 현황" FontWeight="SemiBold" Margin="0,0,0,5"/>
+
+                                    <!-- 실시간 라인 수치 자동 표시 -->
+                                    <Border BorderBrush="{StaticResource Brush.RuleSoft}" BorderThickness="1"
+                                            Background="{StaticResource Brush.Field}" Padding="8,5" Margin="0,0,0,6">
+                                        <StackPanel>
+                                            <DockPanel Margin="0,0,0,2">
+                                                <TextBlock DockPanel.Dock="Right" Text="{Binding LiveRunIdText}"
+                                                           FontFamily="{StaticResource Font.Readout}" FontSize="11.5"
+                                                           Foreground="{StaticResource Brush.SubText}"/>
+                                                <TextBlock Text="{Binding LiveLineStatusText}" FontWeight="SemiBold" FontSize="12"/>
+                                            </DockPanel>
+                                            <TextBlock Text="{Binding LiveCountsText}"
+                                                       FontFamily="{StaticResource Font.Readout}" FontSize="12"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <TextBlock Text="인계 시점 작업 상태" Style="{StaticResource Label}" Margin="0,0,0,4"/>
+                                    <WrapPanel Margin="0,0,0,6">
+                                        <RadioButton Content="회차 완료 후 대기" IsChecked="{Binding RunStateIdle}" GroupName="RunState" Margin="0,0,12,0"/>
+                                        <RadioButton Content="회차 진행 중 일시정지" IsChecked="{Binding RunStatePaused}" GroupName="RunState" Margin="0,0,12,0"/>
+                                        <RadioButton Content="비정상 중단" IsChecked="{Binding RunStateAborted}" GroupName="RunState"/>
+                                    </WrapPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="후번 이월 미검사 팔레트" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBox Text="{Binding RemainingPallets, UpdateSourceTrigger=PropertyChanged}" Width="46"
+                                                 HorizontalContentAlignment="Right" FontFamily="{StaticResource Font.Readout}"/>
+                                        <TextBlock Text="판 (2×5칸)" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                                    </StackPanel>
                                 </StackPanel>
-                                <TextBox Text="{Binding Draft, UpdateSourceTrigger=PropertyChanged}" Height="72" AcceptsReturn="True"
-                                         TextWrapping="Wrap" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"
-                                         IsEnabled="{Binding CanWrite}"/>
-                                <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,8"
-                                           Text="지금 라인 상태·회차·미확인 알람 수가 자동으로 붙습니다. 보기 전용 계정은 쓸 수 없습니다."/>
-                                <Button Content="남기기" Command="{Binding WriteCommand}" Style="{StaticResource CmdMain}" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                        </Border>
+                            </Border>
 
-                        <!-- 1~5번 교대 인수인계 점검 UI 요소 (기능 연결 전 UI 껍데기) -->
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="12,10">
-                            <StackPanel>
-                                <!-- 1. 검사 회차 실적 및 진행 현황 -->
-                                <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
-                                    <StackPanel>
-                                        <TextBlock Text="1. 검사 회차(Run) 실적 및 진행 현황" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <TextBlock Text="인계 시점 작업 상태" Style="{StaticResource Label}" Margin="0,0,0,4"/>
-                                        <WrapPanel Margin="0,0,0,6">
-                                            <RadioButton Content="회차 완료 후 대기" IsChecked="True" GroupName="RunState" Margin="0,0,12,0"/>
-                                            <RadioButton Content="회차 진행 중 일시정지" GroupName="RunState" Margin="0,0,12,0"/>
-                                            <RadioButton Content="비정상 중단" GroupName="RunState"/>
-                                        </WrapPanel>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="후번 이월 미검사 팔레트" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                            <TextBox Text="0" Width="46" HorizontalContentAlignment="Right" FontFamily="{StaticResource Font.Readout}"/>
-                                            <TextBlock Text="판 (2×5칸)" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="6,0,0,0"/>
-                                        </StackPanel>
+                            <!-- 2. 설비 · 비전 · 측정 · AGV 상태 -->
+                            <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
+                                <StackPanel>
+                                    <TextBlock Text="2. 로봇팔 · 컨베이어 · 비전 · 측정 · AGV 상태" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <UniformGrid Columns="2" Margin="0,0,0,6">
+                                        <CheckBox Content="1번 적재팔(집게) 점검" IsChecked="{Binding CheckLoadArm}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="2번 분류팔(전자석) 점검" IsChecked="{Binding CheckSortArm}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="컨베이어·원점스위치 점검" IsChecked="{Binding CheckConveyor}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="전압 측정 헤드 점검" IsChecked="{Binding CheckMeasureHead}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="카메라 3대·암막조명 점검" IsChecked="{Binding CheckVisionBooth}" Margin="0,0,0,2"/>
+                                        <CheckBox Content="AGV 지게차·리프트 점검" IsChecked="{Binding CheckAgvLift}" Margin="0,0,0,2"/>
+                                    </UniformGrid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="AGV 상태" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <ComboBox ItemsSource="{Binding AgvStatusOptions}" SelectedItem="{Binding SelectedAgvStatus}" Width="170"/>
                                     </StackPanel>
-                                </Border>
+                                </StackPanel>
+                            </Border>
 
-                                <!-- 2. 설비 · 비전 · 측정 · AGV 상태 -->
-                                <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
-                                    <StackPanel>
-                                        <TextBlock Text="2. 로봇팔 · 컨베이어 · 비전 · 측정 · AGV 상태" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <UniformGrid Columns="2" Margin="0,0,0,6">
-                                            <CheckBox Content="1번 적재팔(집게) 점검" Margin="0,0,0,4"/>
-                                            <CheckBox Content="2번 분류팔(전자석) 점검" Margin="0,0,0,4"/>
-                                            <CheckBox Content="컨베이어·원점스위치 점검" Margin="0,0,0,4"/>
-                                            <CheckBox Content="전압 측정 헤드 점검" Margin="0,0,0,4"/>
-                                            <CheckBox Content="카메라 3대·암막조명 점검" Margin="0,0,0,2"/>
-                                            <CheckBox Content="AGV 지게차·리프트 점검" Margin="0,0,0,2"/>
-                                        </UniformGrid>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="AGV 상태" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                            <ComboBox SelectedIndex="0" Width="170">
-                                                <ComboBoxItem Content="정상 (대기/운행 가능)"/>
-                                                <ComboBoxItem Content="배터리 교체·충전 필요"/>
-                                                <ComboBoxItem Content="배터리 충전 중"/>
-                                                <ComboBoxItem Content="통신 점검 필요"/>
-                                            </ComboBox>
-                                        </StackPanel>
-                                    </StackPanel>
-                                </Border>
+                            <!-- 3. 건전지 품질 및 재분류(RESORT) 이슈 -->
+                            <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
+                                <StackPanel>
+                                    <TextBlock Text="3. 건전지 품질 및 재분류(RESORT) 이슈" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <UniformGrid Columns="2" Margin="0,0,0,6">
+                                        <CheckBox Content="외관 불량 다발" IsChecked="{Binding IssueVisualDefect}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="상단 +극 위(역방향) 다발" IsChecked="{Binding IssuePlusUp}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="측정 접촉 불량(abnormal)" IsChecked="{Binding IssueContactAbnormal}" Margin="0,0,0,2"/>
+                                        <CheckBox Content="비전 실패 / 배출 실패" IsChecked="{Binding IssueVisionOrSortFail}" Margin="0,0,0,2"/>
+                                    </UniformGrid>
+                                    <TextBlock Text="재분류함(RESORT_BOX) 처리" Style="{StaticResource Label}" Margin="0,0,0,4"/>
+                                    <WrapPanel VerticalAlignment="Center">
+                                        <RadioButton Content="전량 재투입 완료" IsChecked="{Binding ResortCleared}" GroupName="ResortState" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <RadioButton Content="보관 중(후번 재투입):" IsChecked="{Binding ResortPending}" GroupName="ResortState" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBox Text="{Binding ResortRemainingCount, UpdateSourceTrigger=PropertyChanged}" Width="40"
+                                                 HorizontalContentAlignment="Right" FontFamily="{StaticResource Font.Readout}"/>
+                                        <TextBlock Text="개" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </Border>
 
-                                <!-- 3. 건전지 품질 및 재분류(RESORT) 이슈 -->
-                                <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
-                                    <StackPanel>
-                                        <TextBlock Text="3. 건전지 품질 및 재분류(RESORT) 이슈" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <UniformGrid Columns="2" Margin="0,0,0,6">
-                                            <CheckBox Content="외관 불량 다발" Margin="0,0,0,4"/>
-                                            <CheckBox Content="상단 +극 위(역방향) 다발" Margin="0,0,0,4"/>
-                                            <CheckBox Content="측정 접촉 불량(abnormal)" Margin="0,0,0,2"/>
-                                            <CheckBox Content="비전 실패 / 배출 실패" Margin="0,0,0,2"/>
-                                        </UniformGrid>
-                                        <TextBlock Text="재분류함(RESORT_BOX) 처리" Style="{StaticResource Label}" Margin="0,0,0,4"/>
-                                        <WrapPanel VerticalAlignment="Center">
-                                            <RadioButton Content="전량 재투입 완료" IsChecked="True" GroupName="ResortState" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                            <RadioButton Content="보관 중(후번 재투입):" GroupName="ResortState" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                            <TextBox Text="0" Width="40" HorizontalContentAlignment="Right" FontFamily="{StaticResource Font.Readout}"/>
-                                            <TextBlock Text="개" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                        </WrapPanel>
-                                    </StackPanel>
-                                </Border>
+                            <!-- 4. 팔레트 및 분류함 비우기 현황 -->
+                            <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
+                                <StackPanel>
+                                    <DockPanel Margin="0,0,0,5">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding LiveAgvText}"
+                                                   FontFamily="{StaticResource Font.Readout}" FontSize="11.5"
+                                                   Foreground="{StaticResource Brush.SubText}"/>
+                                        <TextBlock Text="4. 팔레트 및 분류함 비우기 확인" FontWeight="SemiBold"/>
+                                    </DockPanel>
+                                    <UniformGrid Columns="2">
+                                        <CheckBox Content="B 분류함(B_BOX) 비움" IsChecked="{Binding BoxBCleared}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="불량함(NG_BOX) 비움" IsChecked="{Binding BoxNgCleared}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="재분류함(RESORT_BOX) 확인" IsChecked="{Binding BoxResortChecked}" Margin="0,0,0,2"/>
+                                        <CheckBox Content="컨베이어 퍽(Puck) 원점 확인" IsChecked="{Binding PuckHomeChecked}" Margin="0,0,0,2"/>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
 
-                                <!-- 4. 팔레트 및 분류함 비우기 현황 -->
-                                <Border Style="{StaticResource Box}" Margin="0,0,0,8" Padding="10,7">
-                                    <StackPanel>
-                                        <TextBlock Text="4. 팔레트 및 분류함 비우기 확인" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <UniformGrid Columns="2">
-                                            <CheckBox Content="B 분류함(B_BOX) 비움" IsChecked="True" Margin="0,0,0,4"/>
-                                            <CheckBox Content="불량함(NG_BOX) 비움" IsChecked="True" Margin="0,0,0,4"/>
-                                            <CheckBox Content="재분류함(RESORT_BOX) 확인" IsChecked="True" Margin="0,0,0,2"/>
-                                            <CheckBox Content="컨베이어 퍽(Puck) 원점 확인" IsChecked="True" Margin="0,0,0,2"/>
-                                        </UniformGrid>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- 5. 비상정지 이력 및 안전/환경 센서 -->
-                                <Border Style="{StaticResource Box}" Padding="10,7">
-                                    <StackPanel>
-                                        <TextBlock Text="5. 비상정지 이력 및 안전/환경 센서" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                                        <TextBlock Text="당번 중 비상정지 발생 여부" Style="{StaticResource Label}" Margin="0,0,0,4"/>
-                                        <WrapPanel Margin="0,0,0,6">
-                                            <RadioButton Content="없음" IsChecked="True" GroupName="EstopState" Margin="0,0,12,0"/>
-                                            <RadioButton Content="발생 후 원점 복귀 완료" GroupName="EstopState" Margin="0,0,12,0"/>
-                                            <RadioButton Content="비상정지 유지 중" GroupName="EstopState"/>
-                                        </WrapPanel>
-                                        <UniformGrid Columns="2">
-                                            <CheckBox Content="AGV 주행로 장애물 없음" IsChecked="True" Margin="0,0,0,4"/>
-                                            <CheckBox Content="로봇팔 반경 간섭 없음" IsChecked="True" Margin="0,0,0,4"/>
-                                            <CheckBox Content="가스(MQ-9)·온습도 정상" IsChecked="True"/>
-                                        </UniformGrid>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </DockPanel>
-                </HeaderedContentControl>
-            </Grid>
+                            <!-- 5. 비상정지 이력 및 안전/환경 센서 -->
+                            <Border Style="{StaticResource Box}" Padding="10,7">
+                                <StackPanel>
+                                    <TextBlock Text="5. 비상정지 이력 및 안전/환경 센서" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                    <TextBlock Text="당번 중 비상정지 발생 여부" Style="{StaticResource Label}" Margin="0,0,0,4"/>
+                                    <WrapPanel Margin="0,0,0,6">
+                                        <RadioButton Content="없음" IsChecked="{Binding EstopNone}" GroupName="EstopState" Margin="0,0,12,0"/>
+                                        <RadioButton Content="발생 후 원점 복귀 완료" IsChecked="{Binding EstopRecovered}" GroupName="EstopState" Margin="0,0,12,0"/>
+                                        <RadioButton Content="비상정지 유지 중" IsChecked="{Binding EstopActive}" GroupName="EstopState"/>
+                                    </WrapPanel>
+                                    <UniformGrid Columns="2">
+                                        <CheckBox Content="AGV 주행로 장애물 없음" IsChecked="{Binding SafeAgvPath}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="로봇팔 반경 간섭 없음" IsChecked="{Binding SafeArmArea}" Margin="0,0,0,4"/>
+                                        <CheckBox Content="가스(MQ-9)·온습도 정상" IsChecked="{Binding SafeEnvSensor}"/>
+                                    </UniformGrid>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </HeaderedContentControl>
         </Grid>
     </DockPanel>
 </UserControl>
