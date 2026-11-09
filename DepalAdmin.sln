@@ -1,0 +1,149 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "조시현 (공통 틀·장치·통계·보고서·채팅)", "조시현 (공통 틀·장치·통계·보고서·채팅)", "{3F2A1B10-0002-4C2E-9A11-000000000001}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Shell", "src\DepalAdmin.Shell\DepalAdmin.Shell.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000001}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Core", "src\DepalAdmin.Core\DepalAdmin.Core.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000002}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Comm", "src\DepalAdmin.Comm\DepalAdmin.Comm.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000003}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Devices", "src\DepalAdmin.Feature.Devices\DepalAdmin.Feature.Devices.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000004}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Stats", "src\DepalAdmin.Feature.Stats\DepalAdmin.Feature.Stats.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000005}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Report", "src\DepalAdmin.Feature.Report\DepalAdmin.Feature.Report.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000006}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Chat", "src\DepalAdmin.Feature.Chat\DepalAdmin.Feature.Chat.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000007}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "장성찬 (로그인·계정·작업 기록·이벤트·이력)", "장성찬 (로그인·계정·작업 기록·이벤트·이력)", "{3F2A1B10-0002-4C2E-9A11-000000000002}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Auth", "src\DepalAdmin.Feature.Auth\DepalAdmin.Feature.Auth.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000008}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.EventLog", "src\DepalAdmin.Feature.EventLog\DepalAdmin.Feature.EventLog.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000009}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.History", "src\DepalAdmin.Feature.History\DepalAdmin.Feature.History.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000010}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "유동호 (조작 버튼·인수인계)", "유동호 (조작 버튼·인수인계)", "{3F2A1B10-0002-4C2E-9A11-000000000003}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Operation", "src\DepalAdmin.Feature.Operation\DepalAdmin.Feature.Operation.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000011}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Handover", "src\DepalAdmin.Feature.Handover\DepalAdmin.Feature.Handover.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000012}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "노원종 (설정·알람·라파 세부)", "노원종 (설정·알람·라파 세부)", "{3F2A1B10-0002-4C2E-9A11-000000000004}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Settings", "src\DepalAdmin.Feature.Settings\DepalAdmin.Feature.Settings.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000013}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Alarms", "src\DepalAdmin.Feature.Alarms\DepalAdmin.Feature.Alarms.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000014}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.PiStatus", "src\DepalAdmin.Feature.PiStatus\DepalAdmin.Feature.PiStatus.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000015}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "김하균 (검사 결과·팔레트 맵)", "김하균 (검사 결과·팔레트 맵)", "{3F2A1B10-0002-4C2E-9A11-000000000005}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Results", "src\DepalAdmin.Feature.Results\DepalAdmin.Feature.Results.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000016}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "김초아 (라인 현황)", "김초아 (라인 현황)", "{3F2A1B10-0002-4C2E-9A11-000000000006}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DepalAdmin.Feature.Process", "src\DepalAdmin.Feature.Process\DepalAdmin.Feature.Process.csproj", "{3F2A1B10-0001-4C2E-9A11-000000000017}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F2A1B10-0001-4C2E-9A11-000000000001}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000005}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000005}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000005}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000005}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000010}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000010}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000010}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000010}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000011}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000011}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000011}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000011}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000012}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000016}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000017}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000017}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000017}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2A1B10-0001-4C2E-9A11-000000000017}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3F2A1B10-0001-4C2E-9A11-000000000001} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000002} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000003} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000004} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000005} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000006} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000007} = {3F2A1B10-0002-4C2E-9A11-000000000001}
+		{3F2A1B10-0001-4C2E-9A11-000000000008} = {3F2A1B10-0002-4C2E-9A11-000000000002}
+		{3F2A1B10-0001-4C2E-9A11-000000000009} = {3F2A1B10-0002-4C2E-9A11-000000000002}
+		{3F2A1B10-0001-4C2E-9A11-000000000010} = {3F2A1B10-0002-4C2E-9A11-000000000002}
+		{3F2A1B10-0001-4C2E-9A11-000000000011} = {3F2A1B10-0002-4C2E-9A11-000000000003}
+		{3F2A1B10-0001-4C2E-9A11-000000000012} = {3F2A1B10-0002-4C2E-9A11-000000000003}
+		{3F2A1B10-0001-4C2E-9A11-000000000013} = {3F2A1B10-0002-4C2E-9A11-000000000004}
+		{3F2A1B10-0001-4C2E-9A11-000000000014} = {3F2A1B10-0002-4C2E-9A11-000000000004}
+		{3F2A1B10-0001-4C2E-9A11-000000000015} = {3F2A1B10-0002-4C2E-9A11-000000000004}
+		{3F2A1B10-0001-4C2E-9A11-000000000016} = {3F2A1B10-0002-4C2E-9A11-000000000005}
+		{3F2A1B10-0001-4C2E-9A11-000000000017} = {3F2A1B10-0002-4C2E-9A11-000000000006}
+	EndGlobalSection
+EndGlobal

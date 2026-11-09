@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 담당: 노원종 — 알람 (알람 서비스 · 알람 탭 · 메인 창 아래 알람 줄 패널) -->
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

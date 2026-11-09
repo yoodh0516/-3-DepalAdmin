@@ -1,0 +1,15 @@
+<Application x:Class="DepalAdmin.Shell.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <!-- 로그인 창이 닫혀도 프로그램이 꺼지지 않도록 직접 종료(OnExplicitShutdown).
+         메인 창이 닫히면 MainWindow.xaml.cs에서 Shutdown()을 부른다. -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 공통 색·스타일 (Core/Themes/Common.xaml) -->
+                <ResourceDictionary Source="pack://application:,,,/DepalAdmin.Core;component/Themes/Common.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

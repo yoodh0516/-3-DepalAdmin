@@ -1,0 +1,21 @@
+<Project>
+  <!--
+    모든 프로젝트에 공통으로 적용되는 설정.
+    각 .csproj에는 "자기만 다른 것"만 적는다 → 합칠 때 충돌이 줄어든다.
+    이 파일은 통신 담당만 수정한다.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MVVM 도우미 ([ObservableProperty], [RelayCommand]) -->
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <!-- 페이지 등록(AddXxxPage)에 쓰는 DI 인터페이스 -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+</Project>

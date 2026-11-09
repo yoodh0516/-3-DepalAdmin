@@ -1,0 +1,66 @@
+<UserControl x:Class="DepalAdmin.Feature.Alarms.AlarmsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.Alarms"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:AlarmsViewModel}"
+             d:DesignWidth="1100" d:DesignHeight="650">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Style="{StaticResource Box}" Margin="0,0,0,10">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="선택한 알람 확인" Command="{Binding AckSelectedCommand}" Style="{StaticResource CmdMain}"/>
+                    <Button Content="모두 확인" Command="{Binding AckAllCommand}" Style="{StaticResource Cmd}"/>
+                    <Button Content="CSV로 저장" Command="{Binding ExportCommand}" Style="{StaticResource Cmd}" Margin="0"/>
+                </StackPanel>
+                <CheckBox Content="확인 안 된 것만 보기" IsChecked="{Binding OnlyUnacked}" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Summary}" VerticalAlignment="Center" Margin="18,0,0,0"
+                           FontFamily="{StaticResource Font.Readout}"/>
+            </DockPanel>
+        </Border>
+
+        <DataGrid ItemsSource="{Binding View}" SelectedItem="{Binding Selected}">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Acked}" Value="False"/>
+                                <Condition Binding="{Binding Level}" Value="ERROR"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource Brush.AlarmFill}"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Acked}" Value="False"/>
+                                <Condition Binding="{Binding Level}" Value="WARN"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" Value="{StaticResource Brush.WarnFill}"/>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding Acked}" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource Brush.SubText}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="등급" Width="60">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Level, Converter={x:Static local:LevelText.Instance}}" FontWeight="SemiBold"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="처음" Binding="{Binding FirstAt, StringFormat='HH:mm:ss'}" Width="75"/>
+                <DataGridTextColumn Header="마지막" Binding="{Binding LastAt, StringFormat='HH:mm:ss'}" Width="75"/>
+                <DataGridTextColumn Header="횟수" Binding="{Binding Count}" Width="50"/>
+                <DataGridTextColumn Header="장치" Binding="{Binding Device, Converter={x:Static local:DeviceText.Instance}}" Width="110"/>
+                <DataGridTextColumn Header="내용" Binding="{Binding Message}" Width="*"/>
+                <DataGridTextColumn Header="확인자" Binding="{Binding AckedBy}" Width="90"/>
+                <DataGridTextColumn Header="확인 시각" Binding="{Binding AckedAt, StringFormat='HH:mm:ss'}" Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 담당: 김초아 — 라인 현황 (공정 흐름도 · 분류 개수·현재 상태 · AGV) -->
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

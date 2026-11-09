@@ -1,0 +1,74 @@
+<UserControl x:Class="DepalAdmin.Feature.History.Records.RecordsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.History.Records"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:RecordsViewModel}"
+             d:DesignWidth="1200" d:DesignHeight="650">
+    <DockPanel>
+        <!-- 조건 -->
+        <Border DockPanel.Dock="Top" Style="{StaticResource Box}" Margin="0,0,0,10">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="CSV로 저장" Command="{Binding ExportCommand}" Style="{StaticResource Cmd}" Margin="0"/>
+                <WrapPanel>
+                    <TextBlock Text="기간" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <DatePicker SelectedDate="{Binding From}" Width="125"/>
+                    <TextBlock Text="~" VerticalAlignment="Center" Margin="6,0"/>
+                    <DatePicker SelectedDate="{Binding To}" Width="125" Margin="0,0,6,0"/>
+                    <Button Content="오늘" Command="{Binding TodayCommand}" Style="{StaticResource Cmd}" MinWidth="0"/>
+                    <Button Content="최근 7일" Command="{Binding LastWeekCommand}" Style="{StaticResource Cmd}" MinWidth="0"/>
+                    <TextBlock Text="등급" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="10,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding Grades}" SelectedItem="{Binding Grade}" Width="90" Margin="0,0,8,0"/>
+                    <Button Content="조회" Command="{Binding SearchCommand}" Style="{StaticResource CmdMain}"/>
+                    <TextBlock Text="회차 찾기" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="10,0,6,0"/>
+                    <TextBox Text="{Binding RunFilter, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
+                </WrapPanel>
+            </DockPanel>
+        </Border>
+
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Style="{StaticResource Hint}" Margin="0,6,0,0"/>
+
+        <TabControl SelectedIndex="{Binding TabIndex}" Background="{StaticResource Brush.Panel}" BorderBrush="{StaticResource Brush.Rule}">
+            <TabItem Header="건전지별">
+                <DataGrid ItemsSource="{Binding Rows}" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="끝난 시각" Binding="{Binding FinishedAt, StringFormat='yyyy-MM-dd HH:mm:ss'}" Width="145"/>
+                        <DataGridTextColumn Header="회차" Binding="{Binding RunId}" Width="165"/>
+                        <DataGridTextColumn Header="번호" Binding="{Binding BatteryId}" Width="50" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="칸" Binding="{Binding PalletSlot}" Width="40" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTemplateColumn Header="등급" Width="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Style="{StaticResource GradeTag}" Background="{Binding Grade, Converter={StaticResource GradeToBrush}}">
+                                        <TextBlock Text="{Binding GradeText}" Foreground="White" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="무부하(V)" Binding="{Binding VOpen, StringFormat='0.000'}" Width="80" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="내부저항(Ω)" Binding="{Binding RInt, StringFormat='0.000'}" Width="85" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="배출 위치" Binding="{Binding DestText}" Width="90"/>
+                        <DataGridTextColumn Header="사유" Binding="{Binding Reason}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+            <TabItem Header="회차별">
+                <DataGrid ItemsSource="{Binding Runs}" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="회차" Binding="{Binding RunId}" Width="170"/>
+                        <DataGridTextColumn Header="시작" Binding="{Binding Start, StringFormat='MM-dd HH:mm'}" Width="95"/>
+                        <DataGridTextColumn Header="걸린 시간" Binding="{Binding DurationText}" Width="75" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="개수" Binding="{Binding Count}" Width="55" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="A" Binding="{Binding A}" Width="50" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="B" Binding="{Binding B}" Width="50" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="불량" Binding="{Binding Ng}" Width="50" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="재분류" Binding="{Binding Resort}" Width="55" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="A 비율" Binding="{Binding ARatio}" Width="*" ElementStyle="{StaticResource NumCell}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</UserControl>

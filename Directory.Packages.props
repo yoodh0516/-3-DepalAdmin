@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    NuGet 패키지 버전을 한곳에서 관리 (Central Package Management).
+    각 프로젝트는 <PackageReference Include="이름" /> 처럼 버전 없이 적는다.
+    → 사람마다 다른 버전을 깔아서 합칠 때 깨지는 일을 막는다.
+    패키지를 새로 쓰고 싶으면 통신 담당에게 말해서 여기에 한 줄 추가.
+  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageVersion Include="MQTTnet" Version="4.3.7.1207" />
+    <PackageVersion Include="MySqlConnector" Version="2.3.7" />
+  </ItemGroup>
+</Project>

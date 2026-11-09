@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    공통 부품: 데이터 모양(Models), 서버와 대화하는 약속(ILineClient),
+    페이지 약속(IPage), 공통 색·스타일(Themes), 설정(AppSettings).
+    ⚠ 통신 담당만 수정. 바꿀 게 있으면 요청해 주세요.
+  -->
+</Project>

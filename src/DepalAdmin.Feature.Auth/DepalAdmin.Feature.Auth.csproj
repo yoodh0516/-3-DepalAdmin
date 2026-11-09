@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 담당: 장성찬 — 로그인 · 계정 관리 · 작업 기록 -->
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

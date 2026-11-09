@@ -1,0 +1,50 @@
+<UserControl x:Class="DepalAdmin.Feature.EventLog.EventsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.EventLog"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:EventsViewModel}"
+             d:DesignWidth="1200" d:DesignHeight="650">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Style="{StaticResource Box}" Margin="0,0,0,10">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                    <Button Content="CSV로 저장" Command="{Binding ExportCommand}" Style="{StaticResource Cmd}"/>
+                    <Button Content="목록 비우기" Command="{Binding ClearCommand}" Style="{StaticResource Cmd}" Margin="0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="등급" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding Levels}" SelectedItem="{Binding Level}" Width="85"/>
+                    <TextBlock Text="장치" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="12,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding Devices}" SelectedItem="{Binding Device}" Width="120"/>
+                    <TextBlock Text="찾기" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="12,0,6,0"/>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                    <TextBlock Text="{Binding Summary}" FontFamily="{StaticResource Font.Readout}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <DataGrid ItemsSource="{Binding View}">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="ERROR">
+                            <Setter Property="Background" Value="{StaticResource Brush.AlarmFill}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="WARN">
+                            <Setter Property="Background" Value="{StaticResource Brush.WarnFill}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="시각" Binding="{Binding Time}" Width="100" ElementStyle="{StaticResource NumCell}"/>
+                <DataGridTextColumn Header="등급" Binding="{Binding LevelText}" Width="55"/>
+                <DataGridTextColumn Header="장치" Binding="{Binding DeviceText}" Width="110"/>
+                <DataGridTextColumn Header="내용" Binding="{Binding Message}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

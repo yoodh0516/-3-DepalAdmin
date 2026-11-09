@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 담당: 조시현 — 장치 상태 카드 -->
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

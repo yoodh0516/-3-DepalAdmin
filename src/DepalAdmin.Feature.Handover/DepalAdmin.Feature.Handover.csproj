@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 담당: 유동호 — 인수인계 -->
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

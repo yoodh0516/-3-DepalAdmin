@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    서버와 통신하는 부분 (MQTT 실제 연결 + 가짜 데이터).
+    ⚠ 통신 담당만 수정.
+  -->
+  <ItemGroup>
+    <PackageReference Include="MQTTnet" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+  </ItemGroup>
+</Project>

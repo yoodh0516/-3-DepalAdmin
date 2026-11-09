@@ -1,0 +1,80 @@
+<Window x:Class="DepalAdmin.Feature.Auth.Login.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DepalAdmin.Feature.Auth.Login"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:LoginViewModel}"
+        Title="로그인" Width="620" SizeToContent="Height"
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        FontFamily="{StaticResource Font.Ui}" FontSize="13"
+        Background="{StaticResource Brush.Screen}" Foreground="{StaticResource Brush.Text}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 왼쪽: 어느 라인 화면인지 -->
+        <Border Background="{StaticResource Brush.Frame}" Padding="22,26">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top">
+                    <TextBlock Text="{Binding StationName}" FontFamily="{StaticResource Font.Readout}"
+                               FontSize="26" FontWeight="SemiBold" Foreground="{StaticResource Brush.FrameText}"/>
+                    <TextBlock Text="건전지 분류 라인 관리 스테이션" Foreground="{StaticResource Brush.FrameSub}"
+                               TextWrapping="Wrap" Margin="0,6,0,0"/>
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding ConnectionHint}" VerticalAlignment="Bottom"
+                           FontFamily="{StaticResource Font.Readout}" Foreground="{StaticResource Brush.FrameSub}"/>
+                <Rectangle/>
+            </DockPanel>
+        </Border>
+
+        <!-- 오른쪽: 입력 -->
+        <StackPanel Grid.Column="1" Margin="26,24,26,22">
+
+            <!-- 로그인 -->
+            <StackPanel Visibility="{Binding IsChangeMode, Converter={StaticResource NotVis}}">
+                <TextBlock Text="아이디" Style="{StaticResource Label}"/>
+                <TextBox x:Name="IdBox" Text="{Binding UserId, UpdateSourceTrigger=PropertyChanged}" Height="32" Margin="0,4,0,12"/>
+                <TextBlock Text="비밀번호" Style="{StaticResource Label}"/>
+                <PasswordBox x:Name="PasswordBox" Height="32" Margin="0,4,0,16"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="로그인" Style="{StaticResource CmdMain}" IsDefault="True" Click="OnLogin" MinWidth="110" MinHeight="34"/>
+                    <Button Content="프로그램 끝내기" Style="{StaticResource Cmd}" IsCancel="True" Click="OnCancel" MinHeight="34"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 새 비밀번호 정하기 -->
+            <StackPanel Visibility="{Binding IsChangeMode, Converter={StaticResource BoolToVis}}">
+                <TextBlock Text="새 비밀번호" Style="{StaticResource Label}"/>
+                <PasswordBox x:Name="NewPasswordBox" Height="32" Margin="0,4,0,12"/>
+                <TextBlock Text="새 비밀번호 한 번 더" Style="{StaticResource Label}"/>
+                <PasswordBox x:Name="ConfirmBox" Height="32" Margin="0,4,0,16"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="비밀번호 바꾸고 들어가기" Style="{StaticResource CmdMain}" IsDefault="True" Click="OnChangePassword" MinHeight="34"/>
+                    <Button Content="취소" Style="{StaticResource Cmd}" Click="OnCancel" MinHeight="34"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- 안내·오류 -->
+            <Border Margin="0,16,0,0" Padding="10,7" BorderThickness="1"
+                    Visibility="{Binding Message, Converter={StaticResource TextToVis}}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{StaticResource Brush.Panel}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource Brush.Rule}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsError}" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Brush.AlarmFill}"/>
+                                <Setter Property="BorderBrush" Value="{StaticResource Brush.Alarm}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Text="{Binding Message}" TextWrapping="Wrap"/>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Window>

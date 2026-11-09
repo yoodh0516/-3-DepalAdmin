@@ -1,0 +1,29 @@
+{
+  // 위쪽에 보이는 라인 이름
+  "StationName": "DEPAL-01",
+
+  // true = 가짜 데이터 (브로커 없이 화면 개발할 때) / false = 실제 Mosquitto에 연결
+  "UseFakeMqtt": true,
+
+  // true = 가짜 이력 데이터 (MySQL 없이)
+  "UseFakeDb": true,
+
+  "BrokerHost": "localhost",
+  "BrokerPort": 1883,
+  "ClientId": "ui",
+
+  // 비밀번호는 여기 말고 settings.local.json에 적기 (git에 안 올라감)
+  "MySqlConnection": "Server=localhost;Port=3306;Database=aa_battery_inspection;User ID=ui_reader;Password=CHANGE_ME;",
+
+  // 실시간 목록(결과·이벤트·알람)에 남길 최대 줄 수
+  "MaxRowsInMemory": 500,
+
+  // 아무 조작이 없으면 자동 로그아웃 (분). 0이면 끔
+  "AutoLogoutMinutes": 10,
+
+  // 고장(ERROR) 알람 때 소리
+  "AlarmSound": true,
+
+  // 계정(users.json)·작업 기록(audit/)을 저장할 폴더. 실행 파일 기준
+  "DataFolder": "data"
+}

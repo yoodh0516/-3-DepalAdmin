@@ -1,0 +1,40 @@
+<UserControl x:Class="DepalAdmin.Feature.Alarms.Bar.AlarmBarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.Alarms.Bar"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:AlarmBarViewModel}"
+             d:DesignWidth="1300" d:DesignHeight="36">
+    <!-- 메인 창 맨 아래 줄 전체를 채운다 (높이 36). 확인 안 된 고장이 있으면 빨강, 주의면 호박색. -->
+    <Border BorderThickness="0,1,0,0" Padding="12,0">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource Brush.PanelHead}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource Brush.Rule}"/>
+                <Setter Property="TextElement.Foreground" Value="{StaticResource Brush.SubText}"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding BannerKey}" Value="alarm">
+                        <Setter Property="Background" Value="{StaticResource Brush.Alarm}"/>
+                        <Setter Property="TextElement.Foreground" Value="White"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding BannerKey}" Value="warn">
+                        <Setter Property="Background" Value="{StaticResource Brush.WarnFill}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource Brush.Warn}"/>
+                        <Setter Property="TextElement.Foreground" Value="{StaticResource Brush.Text}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        <DockPanel>
+            <Button DockPanel.Dock="Right" Content="알람 보기" Command="{Binding GoToAlarmsCommand}"
+                    Style="{StaticResource Cmd}" MinHeight="26" Padding="10,2" Margin="0" VerticalAlignment="Center"/>
+            <TextBlock VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,14,0">
+                <Run Text="미확인"/>
+                <Run Text="{Binding Unacked, Mode=OneWay}" FontFamily="{StaticResource Font.Readout}"/>
+            </TextBlock>
+            <TextBlock Text="{Binding BannerText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+        </DockPanel>
+    </Border>
+</UserControl>

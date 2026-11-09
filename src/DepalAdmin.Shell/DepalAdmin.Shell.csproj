@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    담당: 조시현 — 메인 창 + 시작 코드. 모든 기능을 모아서 실행한다.
+    기능은 이미 전부 등록돼 있으니 각자 이 파일을 고칠 필요 없음.
+  -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>DepalAdmin</AssemblyName>
+    <RootNamespace>DepalAdmin.Shell</RootNamespace>
+    <Version>0.2.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 공통 (조시현) -->
+    <ProjectReference Include="..\DepalAdmin.Core\DepalAdmin.Core.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Comm\DepalAdmin.Comm.csproj" />
+    <!-- 장성찬 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Auth\DepalAdmin.Feature.Auth.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.EventLog\DepalAdmin.Feature.EventLog.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.History\DepalAdmin.Feature.History.csproj" />
+    <!-- 유동호 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Operation\DepalAdmin.Feature.Operation.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.Handover\DepalAdmin.Feature.Handover.csproj" />
+    <!-- 노원종 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Settings\DepalAdmin.Feature.Settings.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.Alarms\DepalAdmin.Feature.Alarms.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.PiStatus\DepalAdmin.Feature.PiStatus.csproj" />
+    <!-- 김하균 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Results\DepalAdmin.Feature.Results.csproj" />
+    <!-- 김초아 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Process\DepalAdmin.Feature.Process.csproj" />
+    <!-- 조시현 -->
+    <ProjectReference Include="..\DepalAdmin.Feature.Devices\DepalAdmin.Feature.Devices.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.Stats\DepalAdmin.Feature.Stats.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.Report\DepalAdmin.Feature.Report.csproj" />
+    <ProjectReference Include="..\DepalAdmin.Feature.Chat\DepalAdmin.Feature.Chat.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- 개인 설정 (git 제외). 있으면 같이 복사되고 settings.json 대신 쓰인다 -->
+    <None Update="settings.local.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

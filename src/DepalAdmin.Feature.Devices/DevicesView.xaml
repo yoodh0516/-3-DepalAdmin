@@ -1,0 +1,68 @@
+<UserControl x:Class="DepalAdmin.Feature.Devices.DevicesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.Devices"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:DevicesViewModel}"
+             d:DesignWidth="1200" d:DesignHeight="650">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="10"/>
+            <ColumnDefinition Width="330"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 장치 카드 (조시현) -->
+        <HeaderedContentControl Style="{StaticResource Section}">
+            <HeaderedContentControl.Header>
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding UpdatedText}" FontWeight="Normal" Foreground="{StaticResource Brush.SubText}"/>
+                    <TextBlock>
+                        <Run Text="장치 하트비트"/>
+                        <Run Text="  이상"/>
+                        <Run Text="{Binding BadgeCount, Mode=OneWay}" FontFamily="{StaticResource Font.Readout}"/>
+                    </TextBlock>
+                </DockPanel>
+            </HeaderedContentControl.Header>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Devices}" Focusable="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 정상이면 회색, 이상일 때만 색이 칠해진다 -->
+                            <Border Width="230" Margin="0,0,10,10" BorderThickness="1"
+                                    BorderBrush="{StaticResource Brush.Rule}"
+                                    Background="{Binding State, Converter={StaticResource StatusToFill}}">
+                                <DockPanel>
+                                    <Border DockPanel.Dock="Top" BorderBrush="{StaticResource Brush.RuleSoft}" BorderThickness="0,0,0,1" Padding="10,6">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding Name}" Style="{StaticResource Label}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14"/>
+                                        </DockPanel>
+                                    </Border>
+                                    <StackPanel Margin="10,8">
+                                        <TextBlock Text="{Binding StateText}" Style="{StaticResource Readout}" FontSize="22"
+                                                   Foreground="{Binding State, Converter={StaticResource StatusToBrush}}"/>
+                                        <TextBlock Text="{Binding ChangedAt}" Style="{StaticResource Label}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </HeaderedContentControl>
+
+        <!-- 라즈베리파이 세부: 노원종 패널이 들어오는 자리 -->
+        <HeaderedContentControl Grid.Column="2" Header="라즈베리파이 세부" Style="{StaticResource Section}">
+            <ContentControl Content="{Binding PiPanel}" Focusable="False"/>
+        </HeaderedContentControl>
+    </Grid>
+</UserControl>

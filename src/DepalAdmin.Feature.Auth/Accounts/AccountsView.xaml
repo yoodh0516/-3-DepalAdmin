@@ -1,0 +1,98 @@
+<UserControl x:Class="DepalAdmin.Feature.Auth.Accounts.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.Auth.Accounts"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:AccountsViewModel}"
+             d:DesignWidth="1100" d:DesignHeight="650">
+    <DockPanel>
+        <!-- 결과 안내 -->
+        <Border DockPanel.Dock="Bottom" Margin="0,10,0,0" Padding="10,7" BorderThickness="1"
+                Visibility="{Binding Message, Converter={StaticResource TextToVis}}">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="{StaticResource Brush.Panel}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource Brush.Rule}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsError}" Value="True">
+                            <Setter Property="Background" Value="{StaticResource Brush.AlarmFill}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource Brush.Alarm}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBox Text="{Binding Message, Mode=OneWay}" IsReadOnly="True" BorderThickness="0"
+                     Background="Transparent" TextWrapping="Wrap" Padding="0"/>
+        </Border>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="310"/>
+            </Grid.ColumnDefinitions>
+
+            <HeaderedContentControl Header="계정 목록" Style="{StaticResource Section}" Padding="0">
+                <DataGrid ItemsSource="{Binding Users}" SelectedItem="{Binding Selected}" BorderThickness="0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="아이디" Binding="{Binding Id}" Width="120"/>
+                        <DataGridTextColumn Header="이름" Binding="{Binding Name}" Width="140"/>
+                        <DataGridTextColumn Header="권한" Binding="{Binding RoleText}" Width="90"/>
+                        <DataGridTemplateColumn Header="상태" Width="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding StateText}"
+                                               Foreground="{Binding StateKey, Converter={StaticResource StatusToBrush}}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="마지막 로그인" Binding="{Binding LastLogin}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </HeaderedContentControl>
+
+            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                <HeaderedContentControl Header="선택한 계정" Style="{StaticResource Section}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Selected.Id, FallbackValue='왼쪽 목록에서 고르세요'}"
+                                   Style="{StaticResource ReadoutSmall}" Margin="0,0,0,10"/>
+                        <TextBlock Text="권한" Style="{StaticResource Label}"/>
+                        <DockPanel Margin="0,4,0,12">
+                            <Button DockPanel.Dock="Right" Content="바꾸기" Command="{Binding ApplyRoleCommand}"
+                                    Style="{StaticResource Cmd}" Margin="6,0,0,0"/>
+                            <ComboBox ItemsSource="{Binding Roles}" DisplayMemberPath="Text" SelectedValuePath="Role"
+                                      SelectedValue="{Binding EditRole}"/>
+                        </DockPanel>
+                        <WrapPanel>
+                            <Button Content="비밀번호 초기화" Command="{Binding ResetPasswordCommand}" Style="{StaticResource Cmd}" Margin="0,0,6,6"/>
+                            <Button Content="사용 중지 / 다시 사용" Command="{Binding ToggleDisabledCommand}" Style="{StaticResource Cmd}" Margin="0,0,6,6"/>
+                            <Button Content="삭제" Command="{Binding DeleteCommand}" Style="{StaticResource Cmd}" Margin="0,0,6,6"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Header="새 계정" Style="{StaticResource Section}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="아이디 (영문·숫자, 3자 이상)" Style="{StaticResource Label}"/>
+                        <TextBox Text="{Binding NewId, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" Height="28"/>
+                        <TextBlock Text="이름" Style="{StaticResource Label}"/>
+                        <TextBox Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" Margin="0,4,0,10" Height="28"/>
+                        <TextBlock Text="권한" Style="{StaticResource Label}"/>
+                        <ComboBox ItemsSource="{Binding Roles}" DisplayMemberPath="Text" SelectedValuePath="Role"
+                                  SelectedValue="{Binding NewRole}" Margin="0,4,0,12"/>
+                        <Button Content="계정 만들기" Command="{Binding AddCommand}" Style="{StaticResource CmdMain}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+
+                <HeaderedContentControl Header="권한별로 할 수 있는 일" Style="{StaticResource Section}">
+                    <StackPanel>
+                        <TextBlock Style="{StaticResource Hint}" Text="보기 전용: 화면 보기, 비상정지"/>
+                        <TextBlock Style="{StaticResource Hint}" Text="작업자: + 라인 조작, 알람 확인, 파일로 내보내기" Margin="0,3,0,0"/>
+                        <TextBlock Style="{StaticResource Hint}" Text="관리자: + 계정, 작업 기록, 설정" Margin="0,3,0,0"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+            </StackPanel>
+        </Grid>
+    </DockPanel>
+</UserControl>

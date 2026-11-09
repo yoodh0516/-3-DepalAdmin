@@ -1,0 +1,147 @@
+<UserControl x:Class="DepalAdmin.Feature.Stats.StatsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:DepalAdmin.Feature.Stats"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=local:StatsViewModel}"
+             d:DesignWidth="1200" d:DesignHeight="720">
+    <UserControl.Resources>
+        <!-- 세로 막대 하나: 위 개수, 막대, 아래 이름 -->
+        <DataTemplate x:Key="ColumnBar">
+            <DockPanel Margin="2,0" ToolTip="{Binding Count}">
+                <TextBlock DockPanel.Dock="Bottom" Text="{Binding Label}" FontSize="11" HorizontalAlignment="Center"
+                           Foreground="{StaticResource Brush.SubText}" Margin="0,4,0,0"/>
+                <StackPanel VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding Count}" FontFamily="{StaticResource Font.Readout}" FontSize="11"
+                               HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                    <Rectangle x:Name="Fill" Height="{Binding Height}" Fill="{StaticResource Brush.Rule}"/>
+                </StackPanel>
+            </DockPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Highlight}" Value="True">
+                    <Setter TargetName="Fill" Property="Fill" Value="{StaticResource Brush.Frame}"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="OneRow">
+            <UniformGrid Rows="1"/>
+        </ItemsPanelTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <!-- 기간 + 요약 숫자 -->
+            <Border Style="{StaticResource Box}" Margin="0,0,0,10">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <TextBlock Text="기간" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <DatePicker SelectedDate="{Binding From}" Width="125"/>
+                        <TextBlock Text="~" VerticalAlignment="Center" Margin="6,0"/>
+                        <DatePicker SelectedDate="{Binding To}" Width="125" Margin="0,0,8,0"/>
+                        <Button Content="불러오기" Command="{Binding LoadCommand}" Style="{StaticResource CmdMain}"/>
+                        <TextBlock Text="{Binding Status}" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <StackPanel Margin="20,0,0,0">
+                            <TextBlock Text="처리" Style="{StaticResource Label}"/>
+                            <TextBlock Text="{Binding Total}" Style="{StaticResource ReadoutSmall}"/>
+                        </StackPanel>
+                        <StackPanel Margin="20,0,0,0">
+                            <TextBlock Text="A 비율" Style="{StaticResource Label}"/>
+                            <TextBlock Text="{Binding ARatio}" Style="{StaticResource ReadoutSmall}"/>
+                        </StackPanel>
+                        <StackPanel Margin="20,0,0,0">
+                            <TextBlock Text="1개당 평균" Style="{StaticResource Label}"/>
+                            <TextBlock Text="{Binding AvgCycle}" Style="{StaticResource ReadoutSmall}"/>
+                        </StackPanel>
+                        <StackPanel Margin="20,0,0,0">
+                            <TextBlock Text="평균 무부하 전압" Style="{StaticResource Label}"/>
+                            <TextBlock Text="{Binding AvgVOpen}" Style="{StaticResource ReadoutSmall}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- 등급 비율 -->
+                <HeaderedContentControl Header="등급 비율" Style="{StaticResource Section}">
+                    <ItemsControl ItemsSource="{Binding Grades}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="110"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <ProgressBar Grid.Column="1" Height="16" Maximum="100" Value="{Binding Percent, Mode=OneWay}"
+                                                 Foreground="{Binding Grade, Converter={StaticResource GradeToBrush}}"
+                                                 Background="{StaticResource Brush.Field}" BorderBrush="{StaticResource Brush.RuleSoft}"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Text}" FontFamily="{StaticResource Font.Readout}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </HeaderedContentControl>
+
+                <!-- 사유 순위 -->
+                <HeaderedContentControl Grid.Column="2" Header="불량·재분류 사유 순위" Style="{StaticResource Section}">
+                    <ItemsControl ItemsSource="{Binding Reasons}" Focusable="False">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,3">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22"/>
+                                        <ColumnDefinition Width="170"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="40"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{Binding Rank}" FontFamily="{StaticResource Font.Readout}" Foreground="{StaticResource Brush.SubText}"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Reason}" TextTrimming="CharacterEllipsis" ToolTip="{Binding Reason}"/>
+                                    <ProgressBar Grid.Column="2" Height="10" Maximum="100" Value="{Binding Width, Mode=OneWay}"
+                                                 Foreground="{Binding Grade, Converter={StaticResource GradeToBrush}}"
+                                                 Background="Transparent" BorderThickness="0" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="3" Text="{Binding Count}" FontFamily="{StaticResource Font.Readout}" HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </HeaderedContentControl>
+
+                <!-- 시간대별 -->
+                <HeaderedContentControl Grid.Row="2" Header="시간대별 처리 개수" Style="{StaticResource Section}">
+                    <ItemsControl ItemsSource="{Binding Hours}" ItemTemplate="{StaticResource ColumnBar}"
+                                  ItemsPanel="{StaticResource OneRow}" Height="170" Focusable="False"/>
+                </HeaderedContentControl>
+
+                <!-- 전압 분포 -->
+                <HeaderedContentControl Grid.Row="2" Grid.Column="2" Style="{StaticResource Section}">
+                    <HeaderedContentControl.Header>
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding LimitNote}" FontWeight="Normal"
+                                       Foreground="{StaticResource Brush.Warn}"/>
+                            <TextBlock Text="무부하 전압 분포 (진한 막대 = A 기준 이상)"/>
+                        </DockPanel>
+                    </HeaderedContentControl.Header>
+                    <ItemsControl ItemsSource="{Binding Volts}" ItemTemplate="{StaticResource ColumnBar}"
+                                  ItemsPanel="{StaticResource OneRow}" Height="170" Focusable="False"/>
+                </HeaderedContentControl>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
