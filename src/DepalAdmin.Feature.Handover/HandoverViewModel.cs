@@ -1,171 +1,156 @@
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DepalAdmin.Core;
-using DepalAdmin.Core.Alarms;
-using DepalAdmin.Core.Auth;
 using DepalAdmin.Core.Handover;
-using DepalAdmin.Core.Messaging;
 using DepalAdmin.Core.Pages;
 
 namespace DepalAdmin.Feature.Handover;
 
 /// <summary>
-/// 담당: 유동호 — 인수인계.
-///   - 메모 쓰기: 쓴 사람·시각·그때 라인 상태·회차·미확인 알람 수를 자동으로 붙인다 (작업자 이상)
-///   - 목록·검색 (최근 7일 기본)
-///   - 다음 근무자 '읽음' 확인 (내가 쓴 메모는 읽음 대상 아님)
-///   - 로그인했는데 안 읽은 메모가 있으면 이 탭으로 데려오고 위에 안내를 띄운다
+/// 담당: 유동호 — 인수인계 화면 ViewModel (UI 껍데기).
+///   - 교대 메모 쓰기 (작성자·시각·라인 상태·회차·미확인 알람 수 자동 첨부)
+///   - 기간·상태·검색어 조회 목록
+///   - 다음 근무자 '읽음' 확인 및 안 읽은 메모 배지/상단 안내
+///   - TODO(유동호): IHandoverStore(파일/MySQL), Session, ILineClient, IAlarmService, IAuditLog, Navigator 실제 기능 연결
 /// </summary>
 public partial class HandoverViewModel : ObservableObject, IHasBadge
 {
-    private const int DefaultDays = 7;
-
-    private readonly IHandoverStore _store;
-    private readonly Session _session;
-    private readonly ILineClient _line;
-    private readonly IAlarmService _alarms;
-    private readonly IAuditLog _audit;
-    private readonly Navigator _navigator;
-    private List<NoteRow> _loaded = new();
+    public string[] ReadFilters { get; } = { "전체", "안 읽음", "읽음" };
 
     public ObservableCollection<NoteRow> Notes { get; } = new();
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(WriteCommand))]
-    private string _draft = "";
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(MarkReadCommand))]
-    private NoteRow? _selected;
-
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(WriteCommand))]
-    private bool _canWrite;
-
+    [ObservableProperty] private string _selectedReadFilter = "전체";
     [ObservableProperty] private string _searchText = "";
-    [ObservableProperty] private DateTime _from = DateTime.Today.AddDays(-(DefaultDays - 1));
+    [ObservableProperty] private DateTime _from = DateTime.Today.AddDays(-6);
     [ObservableProperty] private DateTime _to = DateTime.Today;
-    [ObservableProperty] private int _badgeCount;          // 내가 안 읽은 메모 수
-    [ObservableProperty] private string _notice = "";       // 로그인 직후 안내
-    [ObservableProperty] private string _status = "";
 
-    public HandoverViewModel(IHandoverStore store, Session session, ILineClient line, IAlarmService alarms,
-                             IAuditLog audit, Navigator navigator)
+    [ObservableProperty] private NoteRow? _selected;
+    [ObservableProperty] private string _draft = "";
+    [ObservableProperty] private bool _canWrite = true;
+
+    [ObservableProperty] private int _badgeCount = 1;
+    [ObservableProperty] private string _notice = "안 읽은 인수인계 메모가 1건 있습니다. 내용을 확인하고 [읽음 확인]을 눌러 주세요.";
+    [ObservableProperty] private string _summary = "전체 3건  ·  미확인 1건";
+    [ObservableProperty] private string _status = "UI 미리보기 상태입니다. (기능 연결 전)";
+    [ObservableProperty] private string _currentSnapshotText = "자동 첨부 미리보기 — 라인 상태: 대기  |  회차: 20261112-093015-a3f9  |  미확인 알람: 0건";
+
+    public HandoverViewModel()
     {
-        _store = store;
-        _session = session;
-        _line = line;
-        _alarms = alarms;
-        _audit = audit;
-        _navigator = navigator;
-
-        _store.Changed += async (_, _) => await LoadAsync();
-        _session.Changed += async (_, _) => await OnSessionChangedAsync();
+        LoadSampleShellData();
     }
 
-    partial void OnSearchTextChanged(string value) => Fill();
-
-    private async Task OnSessionChangedAsync()
+    private void LoadSampleShellData()
     {
-        CanWrite = _session.Can(Permission.OperateLine);
-        Notice = "";
-        if (!_session.IsLoggedIn) return;
+        Notes.Add(new NoteRow(
+            new HandoverNote
+            {
+                WrittenAt = DateTime.Today.AddHours(14).AddMinutes(20),
+                AuthorId = "op1",
+                AuthorName = "김작업",
+                LineMode = "paused",
+                RunId = "20261112-130500-b2c1",
+                UnackedAlarms = 1,
+                Text = "측면 2번 카메라 조명이 약간 흔들려 간헐적으로 재분류(RESORT) 판정이 나옵니다.\n다음 회차 시작 전에 암막 부스 고정 나사 한 번 확인 부탁드립니다.",
+                ReadBy = { "op1" }
+            },
+            isUnreadForMe: true));
 
-        await LoadAsync();
-        if (BadgeCount == 0) return;
+        Notes.Add(new NoteRow(
+            new HandoverNote
+            {
+                WrittenAt = DateTime.Today.AddHours(9).AddMinutes(10),
+                AuthorId = "admin",
+                AuthorName = "관리자",
+                LineMode = "running",
+                RunId = "20261112-090012-a1f4",
+                UnackedAlarms = 0,
+                Text = "오전 1회차 팔레트 정상 가동 시작했습니다. AGV 배터리 충전 완료 상태입니다.",
+                ReadBy = { "admin", "op1", "op2" }
+            },
+            isUnreadForMe: false));
 
-        Notice = $"안 읽은 인수인계 메모가 {BadgeCount}건 있습니다. 읽고 [읽음]을 눌러 주세요.";
-        // 로그인 창이 닫히고 탭이 다시 만들어진 뒤에 이동
-        Application.Current?.Dispatcher.InvokeAsync(() => _navigator.Navigate("인수인계"), DispatcherPriority.ApplicationIdle);
+        Notes.Add(new NoteRow(
+            new HandoverNote
+            {
+                WrittenAt = DateTime.Today.AddDays(-1).AddHours(18).AddMinutes(5),
+                AuthorId = "op2",
+                AuthorName = "이교대",
+                LineMode = "idle",
+                RunId = null,
+                UnackedAlarms = 0,
+                Text = "금일 작업 종료 후 컨베이어 원점 복귀(home) 및 재분류함 비우기 완료했습니다.",
+                ReadBy = { "op2", "admin" }
+            },
+            isUnreadForMe: false));
+
+        Selected = Notes.FirstOrDefault();
     }
 
+    // TODO(유동호): 기간·상태·검색어 조회 기능 연결
     [RelayCommand]
-    private async Task LoadAsync()
+    private void Search() { }
+
+    // TODO(유동호): 오늘 날짜로 기간 설정 후 조회 연결
+    [RelayCommand]
+    private void Today()
     {
-        try
-        {
-            var notes = await _store.GetAsync(From.Date, To.Date.AddDays(1));
-            var me = _session.User?.Id ?? "";
-            _loaded = notes.Select(n => new NoteRow(n, me)).ToList();
-            BadgeCount = _loaded.Count(n => n.IsUnreadForMe);
-            Fill();
-        }
-        catch (Exception ex)
-        {
-            Status = $"불러오지 못했습니다: {ex.Message}";
-        }
+        From = DateTime.Today;
+        To = DateTime.Today;
     }
 
-    private void Fill()
+    // TODO(유동호): 최근 7일로 기간 설정 후 조회 연결
+    [RelayCommand]
+    private void LastWeek()
     {
-        var keep = Selected?.Raw.Id;
-        Notes.Clear();
-        foreach (var n in _loaded.Where(n =>
-                     string.IsNullOrWhiteSpace(SearchText) ||
-                     n.Raw.Text.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                     n.Raw.AuthorName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)))
-        {
-            Notes.Add(n);
-        }
-        Selected = Notes.FirstOrDefault(n => n.Raw.Id == keep);
-        Status = $"{Notes.Count}건";
+        From = DateTime.Today.AddDays(-6);
+        To = DateTime.Today;
     }
 
-    private bool CanWriteNow() => CanWrite && !string.IsNullOrWhiteSpace(Draft);
+    // TODO(유동호): 교대 메모 저장 및 작업 기록(IAuditLog) 연결
+    [RelayCommand]
+    private void Write() { }
 
-    [RelayCommand(CanExecute = nameof(CanWriteNow))]
-    private async Task WriteAsync()
-    {
-        var user = _session.User;
-        if (user == null) return;
+    // TODO(유동호): 작성 중인 입력칸 초기화
+    [RelayCommand]
+    private void ClearDraft() => Draft = "";
 
-        var line = _line.LastLine;
-        var note = new HandoverNote
-        {
-            AuthorId = user.Id,
-            AuthorName = user.Name,
-            Text = Draft.Trim(),
-            LineMode = line?.Mode ?? "",
-            RunId = line?.RunId,
-            UnackedAlarms = _alarms.UnackedCount,
-            ReadBy = { user.Id },   // 쓴 사람은 읽은 것으로
-        };
-        await _store.AddAsync(note);
-        _audit.Write("인수인계 작성", note.Text.Length > 40 ? note.Text[..40] + "…" : note.Text);
-        Draft = "";
-    }
+    // TODO(유동호): 선택한 메모 읽음 처리 저장 연결
+    [RelayCommand]
+    private void MarkRead() { }
 
-    private bool CanMarkRead() => Selected is { IsUnreadForMe: true };
-
-    [RelayCommand(CanExecute = nameof(CanMarkRead))]
-    private async Task MarkReadAsync()
-    {
-        var user = _session.User;
-        if (user == null || Selected == null) return;
-        await _store.MarkReadAsync(Selected.Raw.Id, user.Id);
-        _audit.Write("인수인계 읽음", $"{Selected.Raw.AuthorName} {Selected.Raw.WrittenAt:MM-dd HH:mm} 메모");
-        if (BadgeCount <= 1) Notice = "";
-    }
+    // TODO(유동호): 미확인 메모 일괄 읽음 처리 연결
+    [RelayCommand]
+    private void MarkAllRead() { }
 }
 
+/// <summary>화면 표·상세 표시용 행 래퍼</summary>
 public sealed class NoteRow
 {
-    public NoteRow(HandoverNote raw, string myId)
+    public NoteRow(HandoverNote raw, bool isUnreadForMe)
     {
         Raw = raw;
-        IsUnreadForMe = myId != "" && !raw.IsReadBy(myId);
+        IsUnreadForMe = isUnreadForMe;
     }
 
     public HandoverNote Raw { get; }
     public bool IsUnreadForMe { get; }
 
     public string Time => Raw.WrittenAt.ToString("MM-dd HH:mm");
+    public string FullTime => Raw.WrittenAt.ToString("yyyy-MM-dd HH:mm");
     public string Author => Raw.AuthorName;
-    public string Preview => Raw.Text.Replace('\n', ' ');
-    public string LineText => $"{Labels.Mode(Raw.LineMode)}, 미확인 알람 {Raw.UnackedAlarms}건" + (Raw.RunId == null ? "" : $", 회차 {Raw.RunId}");
-    public string ReadText => Raw.ReadBy.Count <= 1 ? "아직 아무도 안 읽음" : $"{Raw.ReadBy.Count - 1}명 읽음";
-    public string StateKey => IsUnreadForMe ? "warn" : "neutral";
+    public string Text => Raw.Text;
+    public string Preview => Raw.Text.Replace("\r\n", " ").Replace('\n', ' ');
+
+    public string LineModeText => Labels.Mode(Raw.LineMode);
+    public string RunIdText => string.IsNullOrWhiteSpace(Raw.RunId) ? "-" : Raw.RunId;
+    public string AlarmCountText => $"{Raw.UnackedAlarms}건";
+
+    public string ReadText => IsUnreadForMe
+        ? "미확인"
+        : (Raw.ReadBy.Count <= 1 ? "아직 안 읽음" : $"{Raw.ReadBy.Count - 1}명 읽음");
+
+    public string ReadDetailText => Raw.ReadBy.Count <= 1
+        ? "확인 기록: 아직 다른 근무자가 읽지 않았습니다."
+        : $"확인 기록: {Raw.ReadBy.Count - 1}명 확인함 ({string.Join(", ", Raw.ReadBy.Skip(1))})";
 }

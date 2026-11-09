@@ -5,38 +5,57 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="clr-namespace:DepalAdmin.Feature.Handover"
              mc:Ignorable="d"
-             d:DataContext="{d:DesignInstance Type=local:HandoverViewModel}"
+             d:DataContext="{d:DesignInstance Type=local:HandoverViewModel, IsDesignTimeCreatable=True}"
              d:DesignWidth="1200" d:DesignHeight="650">
     <DockPanel>
-        <!-- 로그인 직후 안내 (안 읽은 메모가 있을 때만) -->
-        <Border DockPanel.Dock="Top" Margin="0,0,0,10" Padding="10,7" BorderThickness="1"
+        <!-- 상단 미확인 인수인계 알림 줄 (안 읽은 메모가 있을 때 표시) -->
+        <Border DockPanel.Dock="Top" Margin="0,0,0,10" Padding="12,8" BorderThickness="1"
                 Background="{StaticResource Brush.WarnFill}" BorderBrush="{StaticResource Brush.Warn}"
                 Visibility="{Binding Notice, Converter={StaticResource TextToVis}}">
-            <TextBlock Text="{Binding Notice}" FontWeight="SemiBold"/>
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="모두 읽음 확인" Command="{Binding MarkAllReadCommand}"
+                        Style="{StaticResource Cmd}" Margin="0" MinHeight="26" Padding="10,2"/>
+                <TextBlock Text="{Binding Notice}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+            </DockPanel>
         </Border>
 
+        <!-- 상단 조회·검색 조건 바 (RecordsView / EventsView 양식 참고) -->
+        <Border DockPanel.Dock="Top" Style="{StaticResource Box}" Margin="0,0,0,10">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Text="{Binding Summary}"
+                           FontFamily="{StaticResource Font.Readout}" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="기간" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <DatePicker SelectedDate="{Binding From}" Width="120"/>
+                    <TextBlock Text="~" VerticalAlignment="Center" Margin="6,0"/>
+                    <DatePicker SelectedDate="{Binding To}" Width="120" Margin="0,0,6,0"/>
+                    <Button Content="오늘" Command="{Binding TodayCommand}" Style="{StaticResource Cmd}" MinWidth="0"/>
+                    <Button Content="최근 7일" Command="{Binding LastWeekCommand}" Style="{StaticResource Cmd}" MinWidth="0"/>
+
+                    <TextBlock Text="상태" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="10,0,6,0"/>
+                    <ComboBox ItemsSource="{Binding ReadFilters}" SelectedItem="{Binding SelectedReadFilter}" Width="95"/>
+
+                    <TextBlock Text="찾기" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="12,0,6,0"/>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="160" Margin="0,0,8,0"/>
+                    <Button Content="조회" Command="{Binding SearchCommand}" Style="{StaticResource CmdMain}" Margin="0"/>
+                </WrapPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- 하단 상태 표시줄 -->
+        <TextBlock DockPanel.Dock="Bottom" Text="{Binding Status}" Style="{StaticResource Hint}" Margin="0,6,0,0"/>
+
+        <!-- 본문: 좌측 인수인계 목록 / 우측 상세 및 작성 -->
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="10"/>
-                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="420"/>
             </Grid.ColumnDefinitions>
 
-            <!-- 목록 -->
-            <DockPanel>
-                <Border DockPanel.Dock="Top" Style="{StaticResource Box}" Margin="0,0,0,10">
-                    <StackPanel Orientation="Horizontal">
-                        <DatePicker SelectedDate="{Binding From}" Width="120"/>
-                        <TextBlock Text="~" VerticalAlignment="Center" Margin="6,0"/>
-                        <DatePicker SelectedDate="{Binding To}" Width="120" Margin="0,0,8,0"/>
-                        <Button Content="불러오기" Command="{Binding LoadCommand}" Style="{StaticResource Cmd}"/>
-                        <TextBlock Text="찾기" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="10,0,6,0"/>
-                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="150"/>
-                        <TextBlock Text="{Binding Status}" Style="{StaticResource Label}" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    </StackPanel>
-                </Border>
-
-                <DataGrid ItemsSource="{Binding Notes}" SelectedItem="{Binding Selected}">
+            <!-- 좌측: 인수인계 메모 목록 표 -->
+            <HeaderedContentControl Header="교대 인수인계 목록" Style="{StaticResource Section}" Padding="0">
+                <DataGrid ItemsSource="{Binding Notes}" SelectedItem="{Binding Selected}" BorderThickness="0">
                     <DataGrid.RowStyle>
                         <Style TargetType="DataGridRow">
                             <Style.Triggers>
@@ -48,46 +67,111 @@
                         </Style>
                     </DataGrid.RowStyle>
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="쓴 시각" Binding="{Binding Time}" Width="90" ElementStyle="{StaticResource NumCell}"/>
-                        <DataGridTextColumn Header="쓴 사람" Binding="{Binding Author}" Width="90"/>
+                        <DataGridTextColumn Header="작성 시각" Binding="{Binding Time}" Width="105" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="작성자" Binding="{Binding Author}" Width="80"/>
+                        <DataGridTextColumn Header="라인 상태" Binding="{Binding LineModeText}" Width="75"/>
+                        <DataGridTextColumn Header="회차" Binding="{Binding RunIdText}" Width="140" ElementStyle="{StaticResource NumCell}"/>
+                        <DataGridTextColumn Header="미확인 알람" Binding="{Binding AlarmCountText}" Width="75" ElementStyle="{StaticResource NumCell}"/>
                         <DataGridTextColumn Header="내용" Binding="{Binding Preview}" Width="*"/>
-                        <DataGridTextColumn Header="읽음" Binding="{Binding ReadText}" Width="110"/>
+                        <DataGridTextColumn Header="확인 상태" Binding="{Binding ReadText}" Width="95"/>
                     </DataGrid.Columns>
                 </DataGrid>
-            </DockPanel>
+            </HeaderedContentControl>
 
-            <!-- 선택한 메모 + 쓰기 -->
-            <DockPanel Grid.Column="2">
-                <HeaderedContentControl DockPanel.Dock="Bottom" Header="메모 남기기" Style="{StaticResource Section}" Margin="0,10,0,0">
-                    <StackPanel>
-                        <TextBox Text="{Binding Draft, UpdateSourceTrigger=PropertyChanged}" Height="110" AcceptsReturn="True"
-                                 TextWrapping="Wrap" VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"
-                                 IsEnabled="{Binding CanWrite}"/>
-                        <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,8"
-                                   Text="지금 라인 상태·회차·미확인 알람 수가 자동으로 붙습니다. 보기 전용 계정은 쓸 수 없습니다."/>
-                        <Button Content="남기기" Command="{Binding WriteCommand}" Style="{StaticResource CmdMain}" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                </HeaderedContentControl>
+            <!-- 우측: 선택한 메모 상세 + 새 교대 메모 남기기 -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <HeaderedContentControl Header="선택한 메모" Style="{StaticResource Section}">
+                <!-- 우측 상단: 선택한 메모 상세 -->
+                <HeaderedContentControl Grid.Row="0" Header="선택한 메모 상세" Style="{StaticResource Section}">
                     <DockPanel>
-                        <Button DockPanel.Dock="Bottom" Content="읽음" Command="{Binding MarkReadCommand}" Style="{StaticResource Cmd}"
-                                HorizontalAlignment="Left" Margin="0,10,0,0"/>
-                        <StackPanel DockPanel.Dock="Top">
-                            <TextBlock>
-                                <Run Text="{Binding Selected.Author, Mode=OneWay, FallbackValue='왼쪽 목록에서 고르세요'}" FontWeight="SemiBold"/>
-                                <Run Text="  "/>
-                                <Run Text="{Binding Selected.Raw.WrittenAt, Mode=OneWay, StringFormat='yyyy-MM-dd HH:mm'}"
-                                     FontFamily="{StaticResource Font.Readout}" Foreground="{StaticResource Brush.SubText}"/>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Selected.LineText}" Style="{StaticResource Hint}" Margin="0,3,0,8"/>
+                        <!-- 하단 읽음 확인 버튼 영역 -->
+                        <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+                            <Button DockPanel.Dock="Right" Content="읽음 확인" Command="{Binding MarkReadCommand}"
+                                    Style="{StaticResource CmdMain}" Margin="0"/>
+                            <TextBlock Text="{Binding Selected.ReadDetailText, FallbackValue='확인 기록: -'}"
+                                       Style="{StaticResource Hint}" VerticalAlignment="Center"/>
+                        </DockPanel>
+
+                        <!-- 작성자 및 작성 시점 라인 스냅샷 -->
+                        <StackPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+                            <DockPanel Margin="0,0,0,6">
+                                <TextBlock DockPanel.Dock="Right"
+                                           Text="{Binding Selected.FullTime, FallbackValue='-'}"
+                                           FontFamily="{StaticResource Font.Readout}"
+                                           Foreground="{StaticResource Brush.SubText}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Selected.Author, FallbackValue='목록에서 메모를 선택하세요'}"
+                                           FontWeight="SemiBold" FontSize="14"/>
+                            </DockPanel>
+
+                            <!-- 작성 당시 현장 상태 요약 상자 -->
+                            <Border Style="{StaticResource Box}" Padding="10,7" Background="{StaticResource Brush.Field}">
+                                <UniformGrid Columns="3">
+                                    <StackPanel>
+                                        <TextBlock Text="작성 시 라인 상태" Style="{StaticResource Label}"/>
+                                        <TextBlock Text="{Binding Selected.LineModeText, FallbackValue='-'}"
+                                                   Style="{StaticResource ReadoutSmall}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="미확인 알람" Style="{StaticResource Label}"/>
+                                        <TextBlock Text="{Binding Selected.AlarmCountText, FallbackValue='-'}"
+                                                   Style="{StaticResource ReadoutSmall}" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel>
+                                        <TextBlock Text="회차 번호" Style="{StaticResource Label}"/>
+                                        <TextBlock Text="{Binding Selected.RunIdText, FallbackValue='-'}"
+                                                   FontFamily="{StaticResource Font.Readout}" FontSize="12"
+                                                   Foreground="{StaticResource Brush.Text}" Margin="0,4,0,0"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </UniformGrid>
+                            </Border>
                         </StackPanel>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <TextBlock Text="{Binding Selected.Raw.Text}" TextWrapping="Wrap"/>
-                        </ScrollViewer>
+
+                        <!-- 메모 본문 -->
+                        <Border BorderBrush="{StaticResource Brush.Rule}" BorderThickness="1"
+                                Background="{StaticResource Brush.Field}" Padding="8">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding Selected.Text, FallbackValue='선택된 인수인계 메모가 없습니다.'}"
+                                           TextWrapping="Wrap" LineHeight="20"/>
+                            </ScrollViewer>
+                        </Border>
                     </DockPanel>
                 </HeaderedContentControl>
-            </DockPanel>
+
+                <!-- 우측 하단: 교대 메모 남기기 -->
+                <HeaderedContentControl Grid.Row="2" Header="교대 메모 남기기" Style="{StaticResource Section}">
+                    <StackPanel>
+                        <!-- 자동 첨부 항목 미리보기 -->
+                        <Border BorderBrush="{StaticResource Brush.RuleSoft}" BorderThickness="1"
+                                Background="{StaticResource Brush.PanelHead}" Padding="8,5" Margin="0,0,0,8">
+                            <TextBlock Text="{Binding CurrentSnapshotText}" Style="{StaticResource Hint}"
+                                       Foreground="{StaticResource Brush.Text}"/>
+                        </Border>
+
+                        <TextBox Text="{Binding Draft, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="100" AcceptsReturn="True" TextWrapping="Wrap"
+                                 VerticalContentAlignment="Top" VerticalScrollBarVisibility="Auto"
+                                 IsEnabled="{Binding CanWrite}"/>
+
+                        <TextBlock Style="{StaticResource Hint}" Margin="0,4,0,8"
+                                   Text="작성 시 현재 라인 상태·회차·미확인 알람 수가 자동으로 첨부됩니다. (보기 전용 계정은 작성 불가)"/>
+
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="메모 남기기" Command="{Binding WriteCommand}"
+                                    Style="{StaticResource CmdMain}" Margin="0"/>
+                            <Button DockPanel.Dock="Right" Content="지우기" Command="{Binding ClearDraftCommand}"
+                                    Style="{StaticResource Cmd}"/>
+                            <TextBlock Text="" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </StackPanel>
+                </HeaderedContentControl>
+            </Grid>
         </Grid>
     </DockPanel>
 </UserControl>

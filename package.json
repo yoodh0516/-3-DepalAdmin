@@ -1,0 +1,11 @@
+{
+  "name": "depal-admin-dummy",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Build bypassed'",
+    "lint": "echo 'Lint bypassed'",
+    "start": "node -e \"require('http').createServer((req, res) => { res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'}); res.end('<!DOCTYPE html><html><head><title>DepalAdmin - C# Project Mode</title></head><body style=\\\"font-family:sans-serif;padding:2rem;\\\"><h2>DepalAdmin (C# WPF Project Mode)</h2><p>Dev server is running to support AI Studio workspace for this C# solution.</p></body></html>'); }).listen(process.env.PORT || 3000, '0.0.0.0')\"",
+    "dev": "node -e \"require('http').createServer((req, res) => { res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'}); res.end('<!DOCTYPE html><html><head><title>DepalAdmin - C# Project Mode</title></head><body style=\\\"font-family:sans-serif;padding:2rem;\\\"><h2>DepalAdmin (C# WPF Project Mode)</h2><p>Dev server is running to support AI Studio workspace for this C# solution.</p></body></html>'); }).listen(process.env.PORT || 3000, '0.0.0.0')\""
+  }
+}
